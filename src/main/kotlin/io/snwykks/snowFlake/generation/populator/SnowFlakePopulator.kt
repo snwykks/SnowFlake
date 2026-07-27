@@ -15,6 +15,8 @@ internal class SnowFlakePopulator(private val config: Generation) : BlockPopulat
     private val distance         : Int    = config.farlands.distance
     private val coordinateScale  : Double = config.farlands.coordinateScale
     private val heightScale      : Double = config.farlands.heightScale
+    private val minHeightY       : Int    = config.farlands.minHeightY
+    private val maxHeightY       : Int    = config.farlands.maxHeightY
     private val voidStartDistance: Int    = config.farlands.void.startDistance
     private val voidEndDistance  : Int    = config.farlands.void.endDistance
     // endregion
@@ -107,7 +109,7 @@ internal class SnowFlakePopulator(private val config: Generation) : BlockPopulat
                                 val gbx = worldX + bx
                                 val gbz = worldZ + bz
 
-                                if (by < 128 && region.isInRegion(gbx, by, gbz)) {
+                                if (by < maxHeightY && region.isInRegion(gbx, by, gbz)) {
                                     val axisDist = Math.max(Math.abs(gbx), Math.abs(gbz)).toDouble()
 
                                     val voidFactor = when {
@@ -156,7 +158,7 @@ internal class SnowFlakePopulator(private val config: Generation) : BlockPopulat
                 val gz = worldZ + z
                 var surfaceFound = false
 
-                for (y in 127 downTo 0) {
+                for (y in 127 downTo minHeightY) {
                     if (!region.isInRegion(gx, y, gz)) continue
 
                     when (region.getType(gx, y, gz)) {
