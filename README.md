@@ -6,6 +6,114 @@ A Minecraft Farland modern generation plugin.
 ---
 # What is SnowFlake?
 This is a simple minecraft Paper Plugin for FarLand generation in 1.21.x.
-Using:
+Plugin modificating generation in worlds which typed in config (generation.yml)
+in custom distance (generation.yml). Brings a old minecraft bug of generation
+in new minecraft versions.
+
+Plugins generates farlands in world in realtime with BlockPopulator.
+
+---
+# Configs
+| File | What doing |
+|-------------|-------------|
+| `config.yml`| main plugin config with command settings    |
+| `generation.yml` | plugin generation config    |
+
+
++ generation.yml
+```yml
+version: 1.0.0
+# The worlds where Far Lands generation is applied.
+worlds:
+- world
+- meow
+
+#  Far Lands generation settings.
+farlands:
+  # Distance from world center where Far Lands begin. Original Beta 1.7.3 value: 12550821.
+  distance: 12550821
+  # Noise coordinate scale.
+  coordinate-scale: 820000.0
+  # Noise height scale.
+  height-scale: 820000.0
+  
+#  Void fade — gradual corruption towards the void.
+  void:
+    # Distance at which terrain starts to corrupt.
+    start-distance: 12000
+    # Distance at which terrain disappears completely.
+    end-distance: 14000000
+```
+
++ config.yml
+```yml
+# Don't change it if you don't know what it is.
+version: 1.0.0
+
+#  prefix for messages in minecraft.
+prefix: <gradient:#4490f3:#b3d4ff>SnowFlake</gradient>
+message_templates:
+  simple:
+  - <white>❏ <bold>%prefix%</white>  <bold>%module%</bold> <bold><#7fc4f5>*</#7fc4f5></bold> %message%
+  multiline:
+  - <white>❏ <bold>%prefix%</white>  <bold>%module%</bold>
+  - <bold><#7fc4f5>*</#7fc4f5></bold> <white>%message%</white>
+  advanced:
+  - <white>❏ <bold>%prefix%</white>  <bold>%module%</bold>
+  - <bold><#7fc4f5>*</#7fc4f5></bold> <white>%message%</white>
+  - <#a57ff5>+</#a57ff5> <white>%inspector%</white>
+
+#  neofetch for plugin fetch on start.
+neofetch:
+- <blue>                           __ _       _          </blue>
+- <blue>                          / _| |     | |         </blue>
+- <blue>  ___ _ __   _____      _| |_| | __ _| | _____   </blue>
+- <blue> / __| '_ \ / _ \ \ /\ / /  _| |/ _` | |/ / _ \ </blue>
+- <blue> \__ \ | | | (_) \ V  V /| | | | (_| |   <  __/ </blue>
+- <blue> |___/_| |_|\___/ \_/\_/ |_| |_|\__,_|_|\_\___| </blue>
+
+#  Command in plugin with permissions.
+commands:
+  command: snowflake
+  aliases:
+  - sf
+  permissions:
+    config: snowflake.config
+    reload: snowflake.reload
+    dev_perm: snowflake.dev
+
+#  Plugin command messages.
+messages:
+  help_message:
+  - '<white>Использование: /sf {argument}</white>'
+  - <#7fc4f5>Подкоманды:</#7fc4f5>
+  - <white>/sf reload <gray>-</gray> Перезагрузка конфигов.</white>
+  - <white>/sf config <gray>-</gray> Вывод настроек генерации.</white>
+  reload_message: <white>Config has reloaded successfully!</white>
+  config_message:
+  - '<white>Active worlds: <#7fc4f5>%worlds%</#7fc4f5><white>'
+  - '<white>Distance: <#7fc4f5>%distance%</#7fc4f5><white>'
+  - '<white>coordinateScale: <#7fc4f5>%coordinateScale%</#7fc4f5><white>'
+  - '<white>heightScale: <#7fc4f5>%heightScale%</#7fc4f5><white>'
+```
+
+Using libs:
 - [kaml](https://github.com/charleskorn/kaml)
 - [cloud](https://github.com/Incendo/cloud)
+
+---
+How to build?
+1. Open source project in Intellej Idea
+2. Open console
+3. type `./gradlew build`
+Done: .jar builded in root path project `build/libs`
+
+or:
+1. Open gradle menu:
+
+<img width="223" height="134" alt="image" src="https://github.com/user-attachments/assets/c71c952c-7d4e-4d00-8d1b-fbfc9d960efc" />
+
+2. Start `SnowFlake\Task\build\build`
+
+Done: .jar builded in root path project `build/libs`
+
