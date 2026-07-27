@@ -82,15 +82,24 @@ internal class SnowFlakePopulator(private val config: Generation) : BlockPopulat
         // region — Fill terrain using trilinear interpolation of noise
         for (x in 0 until 4) {
             for (z in 0 until 4) {
-                for (y in 0 until 32) {
-                    var d1 = noiseArray!![(( x      * noiseZ + z    ) * noiseY + y    )]
-                    var d2 = noiseArray!![(( x      * noiseZ + z + 1) * noiseY + y    )]
-                    var d3 = noiseArray!![(((x + 1) * noiseZ + z    ) * noiseY + y    )]
-                    var d4 = noiseArray!![(((x + 1) * noiseZ + z + 1) * noiseY + y    )]
-                    val d5 = (noiseArray!![(( x      * noiseZ + z    ) * noiseY + y + 1)] - d1) * 0.125
-                    val d6 = (noiseArray!![(( x      * noiseZ + z + 1) * noiseY + y + 1)] - d2) * 0.125
-                    val d7 = (noiseArray!![(((x + 1) * noiseZ + z    ) * noiseY + y + 1)] - d3) * 0.125
-                    val d8 = (noiseArray!![(((x + 1) * noiseZ + z + 1) * noiseY + y + 1)] - d4) * 0.125
+                for (y in 0 until 31) {
+                    val idx1 = (( x      * noiseZ + z    ) * noiseY + y    )
+                    val idx2 = (( x      * noiseZ + z + 1) * noiseY + y    )
+                    val idx3 = (((x + 1) * noiseZ + z    ) * noiseY + y    )
+                    val idx4 = (((x + 1) * noiseZ + z + 1) * noiseY + y    )
+                    val idx5 = (( x      * noiseZ + z    ) * noiseY + y + 1)
+                    val idx6 = (( x      * noiseZ + z + 1) * noiseY + y + 1)
+                    val idx7 = (((x + 1) * noiseZ + z    ) * noiseY + y + 1)
+                    val idx8 = (((x + 1) * noiseZ + z + 1) * noiseY + y + 1)
+
+                    var d1 = safeGet(noiseArray, idx1)
+                    var d2 = safeGet(noiseArray, idx2)
+                    var d3 = safeGet(noiseArray, idx3)
+                    var d4 = safeGet(noiseArray, idx4)
+                    val d5 = (safeGet(noiseArray, idx5) - d1) * 0.125
+                    val d6 = (safeGet(noiseArray, idx6) - d2) * 0.125
+                    val d7 = (safeGet(noiseArray, idx7) - d3) * 0.125
+                    val d8 = (safeGet(noiseArray, idx8) - d4) * 0.125
 
                     for (dy in 0 until 8) {
                         var d9  = d1
@@ -181,6 +190,10 @@ internal class SnowFlakePopulator(private val config: Generation) : BlockPopulat
             }
         }
         // endregion
+    }
+
+    private fun safeGet(array: DoubleArray?, index: Int): Double {
+        return if (array != null && index >= 0 && index < array.size) array[index] else 0.0
     }
 
     // region — Lazy init of noise generators per world seed
