@@ -75,7 +75,9 @@ data class Messages (
     @SerialName("config_message") val configmessage: List<String> = listOf(
         "<white>Active worlds: <#7fc4f5>%worlds%</#7fc4f5><white>",
         "<white>Distance: <#7fc4f5>%distance%</#7fc4f5><white>",
-        "<white>coordinateScale: <#7fc4f5>%coordinateScale%</#7fc4f5><white>",
-        "<white>heightScale: <#7fc4f5>%heightScale%</#7fc4f5><white>",
+        "<white>CoordinateScale: <#7fc4f5>%coordinateScale%</#7fc4f5><white>",
+        "<white>HeightScale: <#7fc4f5>%heightScale%</#7fc4f5><white>",
+        "<white>minHeightY: <#7fc4f5>%minHeightY%</#7fc4f5></white>",
+        "<white>maxHeightY: <#7fc4f5>%maxHeightY%</#7fc4f5></white>"
     )
 )
