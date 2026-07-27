@@ -110,10 +110,6 @@ Done: .jar builded in root path project `build/libs`
 
 or:
 1. Open gradle menu:
-
-<img width="223" height="134" alt="image" src="https://github.com/user-attachments/assets/c71c952c-7d4e-4d00-8d1b-fbfc9d960efc" />
-
 2. Start `SnowFlake\Task\build\build`
-
 Done: .jar builded in root path project `build/libs`
 
