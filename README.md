@@ -22,20 +22,23 @@ Plugins generates farlands in world in realtime with BlockPopulator.
 
 + generation.yml
 ```yml
-version: 1.0.0
+version: 1.1.0
 # The worlds where Far Lands generation is applied.
 worlds:
 - world
-- meow
 
 #  Far Lands generation settings.
 farlands:
   # Distance from world center where Far Lands begin. Original Beta 1.7.3 value: 12550821.
   distance: 12550821
   # Noise coordinate scale.
-  coordinate-scale: 820000.0
+  coordinate-scale: 684.412
   # Noise height scale.
-  height-scale: 820000.0
+  height-scale: 684.412
+  # Min noise height.
+  min-height-y: 0
+  # Max noise height.
+  max-height-y: 128
   
 #  Void fade — gradual corruption towards the void.
   void:
@@ -48,7 +51,7 @@ farlands:
 + config.yml
 ```yml
 # Don't change it if you don't know what it is.
-version: 1.0.0
+version: 1.1.0
 
 #  prefix for messages in minecraft.
 prefix: <gradient:#4490f3:#b3d4ff>SnowFlake</gradient>
