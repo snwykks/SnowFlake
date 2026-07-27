@@ -77,7 +77,7 @@ data class Messages (
         "<white>Distance: <#7fc4f5>%distance%</#7fc4f5><white>",
         "<white>CoordinateScale: <#7fc4f5>%coordinateScale%</#7fc4f5><white>",
         "<white>HeightScale: <#7fc4f5>%heightScale%</#7fc4f5><white>",
-        "<white>minHeightY: <#7fc4f5>%minHeightY%</#7fc4f5></white>",
-        "<white>maxHeightY: <#7fc4f5>%maxHeightY%</#7fc4f5></white>"
+        "<white>MinHeightY: <#7fc4f5>%minHeightY%</#7fc4f5></white>",
+        "<white>MaxHeightY: <#7fc4f5>%maxHeightY%</#7fc4f5></white>"
     )
 )
