@@ -55,9 +55,9 @@ internal class SnowFlakePopulator(private val config: Generation) : BlockPopulat
 
         val noiseX = 5
         val noiseZ = 5
-        val noiseY = 33
+        val noiseY = (maxHeightY - minHeightY) / 8 + 1
 
-        noiseArray = initializeNoiseField(noiseArray, chunkX * 4, 0, chunkZ * 4, noiseX, noiseY, noiseZ)
+        noiseArray = initializeNoiseField(noiseArray, chunkX * 4, minHeightY / 4, chunkZ * 4, noiseX, noiseY, noiseZ)
 
         val worldX = chunkX * 16
         val worldZ = chunkZ * 16
@@ -158,7 +158,7 @@ internal class SnowFlakePopulator(private val config: Generation) : BlockPopulat
                 val gz = worldZ + z
                 var surfaceFound = false
 
-                for (y in 127 downTo minHeightY) {
+                for (y in maxHeightY - 1 downTo minHeightY) {
                     if (!region.isInRegion(gx, y, gz)) continue
 
                     when (region.getType(gx, y, gz)) {
