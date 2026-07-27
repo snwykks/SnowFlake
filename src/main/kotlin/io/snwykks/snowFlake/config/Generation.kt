@@ -25,8 +25,11 @@ data class Generation(
         @YamlComment("Noise height scale.")
         @SerialName("height-scale") val heightScale: Double = 684.412,
 
-//        @YamlComment("Sea level.")
-//        val seaLevel: Int = 63,
+        @YamlComment("Min noise height.")
+        @SerialName("min-height-y") val minHeightY: Int = 0,
+
+        @YamlComment("Max noise height.")
+        @SerialName("max-height-y") val maxHeightY: Int = 128,
 
         @YamlComment("^ENTER Void fade — gradual corruption towards the void.")
         @SerialName("void")
