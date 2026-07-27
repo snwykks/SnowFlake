@@ -7,7 +7,7 @@ import kotlinx.serialization.SerialName
 @Serializable
 data class Plugin(
     @YamlComment("Don't change it if you don't know what it is.")
-    val version: String = "1.0.0",
+    val version: String = "1.1.0",
 
     @YamlComment("^ENTER prefix for messages in minecraft.")
     val prefix: String = "<gradient:#4490f3:#b3d4ff>SnowFlake</gradient>",
