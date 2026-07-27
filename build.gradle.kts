@@ -51,8 +51,8 @@ tasks.shadowJar {
 
     minimize()
 
-    relocate("org.incendo.cloud", "io.snwykks.purpletokyo.libs.cloud")
-    relocate("com.charleskorn.kaml", "io.snwykks.purpletokyo.libs.kaml")
+    relocate("org.incendo.cloud", "io.snwykks.snowflake.libs.cloud")
+    relocate("com.charleskorn.kaml", "io.snwykks.snowflake.libs.kaml")
 
     exclude("META-INF/*.SF")
     exclude("META-INF/*.DSA")
