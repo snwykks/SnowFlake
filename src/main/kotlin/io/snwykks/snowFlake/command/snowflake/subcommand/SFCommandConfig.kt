@@ -22,6 +22,8 @@ internal object SFCommandConfig {
                     val distance = farlands.farlands.distance.toString()
                     val coordinateScale = farlands.farlands.coordinateScale.toString()
                     val heightScale = farlands.farlands.heightScale.toString()
+                    val minHeightY = farlands.farlands.minHeightY.toString()
+                    val maxHeightY = farlands.farlands.maxHeightY.toString()
 
                     SnowFlakeMessage
                         .builder(sender)
@@ -33,6 +35,8 @@ internal object SFCommandConfig {
                         .placeholder("distance", distance)
                         .placeholder("coordinateScale", coordinateScale)
                         .placeholder("heightScale", heightScale)
+                        .placeholder("minHeightY", minHeightY)
+                        .placeholder("maxHeightY", maxHeightY)
                         .send()
                 }
         )
