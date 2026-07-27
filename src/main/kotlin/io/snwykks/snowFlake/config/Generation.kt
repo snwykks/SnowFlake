@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Generation(
-    val version: String = "1.0.0",
+    val version: String = "1.1.0",
 
     @YamlComment("The worlds where Far Lands generation is applied.")
     val worlds: List<String> = listOf("world"),
