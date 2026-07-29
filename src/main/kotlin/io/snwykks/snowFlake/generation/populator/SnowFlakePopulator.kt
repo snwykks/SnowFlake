@@ -8,87 +8,93 @@ import org.bukkit.generator.BlockPopulator
 import org.bukkit.generator.LimitedRegion
 import org.bukkit.generator.WorldInfo
 import java.util.Random
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.math.abs
 
 internal class SnowFlakePopulator(private val config: Generation) : BlockPopulator() {
 
-    // region — Far Lands settings from config
-    private val distance         : Int    = config.farlands.distance
-    private val coordinateScale  : Double = config.farlands.coordinateScale
-    private val heightScale      : Double = config.farlands.heightScale
-    private val minHeightY       : Int    = config.farlands.minHeightY
-    private val maxHeightY       : Int    = config.farlands.maxHeightY
-    private val voidStartDistance: Int    = config.farlands.void.startDistance
-    private val voidEndDistance  : Int    = config.farlands.void.endDistance
-    // endregion
+    private val distance: Int = config.farlands.distance
+    private val coordinateScale: Double = config.farlands.coordinateScale
+    private val heightScale: Double = config.farlands.heightScale
+    private val minHeightY: Int = config.farlands.minHeightY
+    private val maxHeightY: Int = config.farlands.maxHeightY
+    private val voidStartDistance: Int = config.farlands.void.startDistance
+    private val voidEndDistance: Int = config.farlands.void.endDistance
 
-    // region — Noise generators (lazy init per world seed)
-    private var minLimitNoise: NoiseGeneratorOctaves? = null
-    private var maxLimitNoise: NoiseGeneratorOctaves? = null
-    private var mainNoise    : NoiseGeneratorOctaves? = null
-    private var depthNoise   : NoiseGeneratorOctaves? = null
-    private var scaleNoise   : NoiseGeneratorOctaves? = null
-    // endregion
+    private val noiseCache = ConcurrentHashMap<Long, NoiseGenerators>()
 
-    // region — Reusable noise arrays
-    private var noiseArray    : DoubleArray? = null
-    private var minLimitArray : DoubleArray? = null
-    private var maxLimitArray : DoubleArray? = null
-    private var mainNoiseArray: DoubleArray? = null
-    private var depthArray    : DoubleArray? = null
-    private var scaleArray    : DoubleArray? = null
-    // endregion
+    private data class NoiseGenerators(
+        val minLimitNoise: NoiseGeneratorOctaves,
+        val maxLimitNoise: NoiseGeneratorOctaves,
+        val mainNoise: NoiseGeneratorOctaves,
+        val depthNoise: NoiseGeneratorOctaves,
+        val scaleNoise: NoiseGeneratorOctaves
+    )
 
     override fun populate(worldInfo: WorldInfo, random: Random, chunkX: Int, chunkZ: Int, region: LimitedRegion) {
-        // region — World check: only apply to configured worlds
         if (worldInfo.name !in config.worlds) return
-        // endregion
 
         val blockX = chunkX.toLong() * 16L
         val blockZ = chunkZ.toLong() * 16L
 
-        val isFarX = Math.abs(blockX) >= distance.toLong()
-        val isFarZ = Math.abs(blockZ) >= distance.toLong()
+        val isFarX = abs(blockX) >= distance.toLong()
+        val isFarZ = abs(blockZ) >= distance.toLong()
 
         if (!isFarX && !isFarZ) return
 
-        initGenerators(worldInfo.seed)
+        val generators = noiseCache.getOrPut(worldInfo.seed) {
+            val rand = Random(worldInfo.seed)
+            NoiseGenerators(
+                minLimitNoise = NoiseGeneratorOctaves(rand, 16),
+                maxLimitNoise = NoiseGeneratorOctaves(rand, 16),
+                mainNoise     = NoiseGeneratorOctaves(rand, 8),
+                scaleNoise    = NoiseGeneratorOctaves(rand, 10),
+                depthNoise    = NoiseGeneratorOctaves(rand, 16)
+            ).also {
+                SnowLogger.info("<blue>SnowFlake noise generators initialized (seed: ${worldInfo.seed})</blue>")
+            }
+        }
 
         val noiseX = 5
         val noiseZ = 5
         val noiseY = (maxHeightY - minHeightY) / 8 + 1
 
-        noiseArray = initializeNoiseField(noiseArray, chunkX * 4, minHeightY / 4, chunkZ * 4, noiseX, noiseY, noiseZ)
+        val noiseArray = initializeNoiseField(
+            generators,
+            chunkX * 4,
+            minHeightY / 4,
+            chunkZ * 4,
+            noiseX, noiseY, noiseZ
+        )
 
         val worldX = chunkX * 16
         val worldZ = chunkZ * 16
 
-        // region — Clear column: bedrock at bottom, air above
         for (x in 0 until 16) {
             for (z in 0 until 16) {
                 val gx = worldX + x
                 val gz = worldZ + z
 
-                if (worldInfo.minHeight >= region.buffer - 64) {
+                if (region.isInRegion(gx, worldInfo.minHeight, gz)) {
                     region.setType(gx, worldInfo.minHeight, gz, Material.BEDROCK)
                 }
 
                 for (y in worldInfo.minHeight + 1 until worldInfo.maxHeight) {
+                    if (!region.isInRegion(gx, y, gz)) continue
                     region.setType(gx, y, gz, Material.AIR)
                 }
             }
         }
-        // endregion
 
-        // region — Fill terrain using trilinear interpolation of noise
         for (x in 0 until 4) {
             for (z in 0 until 4) {
                 for (y in 0 until 31) {
-                    val idx1 = (( x      * noiseZ + z    ) * noiseY + y    )
-                    val idx2 = (( x      * noiseZ + z + 1) * noiseY + y    )
+                    val idx1 = ((x      * noiseZ + z    ) * noiseY + y    )
+                    val idx2 = ((x      * noiseZ + z + 1) * noiseY + y    )
                     val idx3 = (((x + 1) * noiseZ + z    ) * noiseY + y    )
                     val idx4 = (((x + 1) * noiseZ + z + 1) * noiseY + y    )
-                    val idx5 = (( x      * noiseZ + z    ) * noiseY + y + 1)
-                    val idx6 = (( x      * noiseZ + z + 1) * noiseY + y + 1)
+                    val idx5 = ((x      * noiseZ + z    ) * noiseY + y + 1)
+                    val idx6 = ((x      * noiseZ + z + 1) * noiseY + y + 1)
                     val idx7 = (((x + 1) * noiseZ + z    ) * noiseY + y + 1)
                     val idx8 = (((x + 1) * noiseZ + z + 1) * noiseY + y + 1)
 
@@ -118,27 +124,31 @@ internal class SnowFlakePopulator(private val config: Generation) : BlockPopulat
                                 val gbx = worldX + bx
                                 val gbz = worldZ + bz
 
-                                if (by < maxHeightY && region.isInRegion(gbx, by, gbz)) {
-                                    val axisDist = Math.max(Math.abs(gbx), Math.abs(gbz)).toDouble()
+                                if (by >= maxHeightY || !region.isInRegion(gbx, by, gbz)) {
+                                    d13 += d14
+                                    continue
+                                }
 
-                                    val voidFactor = when {
-                                        axisDist > voidStartDistance.toDouble() -> {
-                                            ((axisDist - voidStartDistance.toDouble()) / (voidEndDistance - voidStartDistance).toDouble())
-                                                .coerceIn(0.0, 1.0)
-                                        }
-                                        else -> 0.0
+                                val axisDist = maxOf(abs(gbx), abs(gbz)).toDouble()
+
+                                val voidFactor = when {
+                                    axisDist > voidStartDistance.toDouble() -> {
+                                        ((axisDist - voidStartDistance.toDouble()) /
+                                                (voidEndDistance - voidStartDistance).toDouble())
+                                            .coerceIn(0.0, 1.0)
                                     }
+                                    else -> 0.0
+                                }
 
-                                    val density = if (voidFactor > 0.0) d13 - voidFactor * 150.0 else d13
+                                val density = if (voidFactor > 0.0) d13 - voidFactor * 150.0 else d13
 
-                                    when {
-                                        density > 0.0 -> region.setType(gbx, by, gbz, Material.STONE)
-                                        by < 63 && axisDist <= voidEndDistance.toDouble() -> {
-                                            if (axisDist > voidStartDistance.toDouble()) {
-                                                if (voidFactor < 0.2) region.setType(gbx, by, gbz, Material.WATER)
-                                            } else {
-                                                region.setType(gbx, by, gbz, Material.WATER)
-                                            }
+                                when {
+                                    density > 0.0 -> region.setType(gbx, by, gbz, Material.STONE)
+                                    by < 63 && axisDist <= voidEndDistance.toDouble() -> {
+                                        if (axisDist > voidStartDistance.toDouble()) {
+                                            if (voidFactor < 0.2) region.setType(gbx, by, gbz, Material.WATER)
+                                        } else {
+                                            region.setType(gbx, by, gbz, Material.WATER)
                                         }
                                     }
                                 }
@@ -158,9 +168,7 @@ internal class SnowFlakePopulator(private val config: Generation) : BlockPopulat
                 }
             }
         }
-        // endregion
 
-        // region — Surface pass: STONE → GRASS_BLOCK + DIRT
         for (x in 0 until 16) {
             for (z in 0 until 16) {
                 val gx = worldX + x
@@ -184,52 +192,50 @@ internal class SnowFlakePopulator(private val config: Generation) : BlockPopulat
                             }
                         }
                         Material.AIR -> surfaceFound = false
-                        else         -> {}
+                        else -> {}
                     }
                 }
             }
         }
-        // endregion
     }
 
-    private fun safeGet(array: DoubleArray?, index: Int): Double {
-        return if (array != null && index >= 0 && index < array.size) array[index] else 0.0
+    private fun safeGet(array: DoubleArray, index: Int): Double {
+        return if (index in array.indices) array[index] else 0.0
     }
 
-    // region — Lazy init of noise generators per world seed
-    private fun initGenerators(seed: Long) {
-        if (minLimitNoise != null) return
-        val rand = Random(seed)
-        minLimitNoise = NoiseGeneratorOctaves(rand, 16)
-        maxLimitNoise = NoiseGeneratorOctaves(rand, 16)
-        mainNoise     = NoiseGeneratorOctaves(rand, 8)
-        scaleNoise    = NoiseGeneratorOctaves(rand, 10)
-        depthNoise    = NoiseGeneratorOctaves(rand, 16)
-        SnowLogger.info("<blue>SnowFlake noise generators initialized (seed: $seed)</blue>")
-    }
-    // endregion
-
-    // region — Noise field initialization (trilinear interpolation source)
     private fun initializeNoiseField(
-        array: DoubleArray?,
+        gen: NoiseGenerators,
         x: Int, y: Int, z: Int,
         xSize: Int, ySize: Int, zSize: Int
     ): DoubleArray {
-        val result = array ?: DoubleArray(xSize * ySize * zSize)
+        val result = DoubleArray(xSize * ySize * zSize)
 
-        scaleArray    = scaleNoise!!.generateNoiseOctaves(scaleArray,     x, z, xSize, zSize, 1.121, 1.121, 0.5)
-        depthArray    = depthNoise!!.generateNoiseOctaves(depthArray,     x, z, xSize, zSize, 200.0, 200.0, 0.5)
-        mainNoiseArray = mainNoise!!.generateNoiseOctaves(mainNoiseArray, x, y, z, xSize, ySize, zSize, coordinateScale / 80.0, heightScale / 160.0, coordinateScale / 80.0)
-        minLimitArray  = minLimitNoise!!.generateNoiseOctaves(minLimitArray, x, y, z, xSize, ySize, zSize, coordinateScale, heightScale, coordinateScale)
-        maxLimitArray  = maxLimitNoise!!.generateNoiseOctaves(maxLimitArray, x, y, z, xSize, ySize, zSize, coordinateScale, heightScale, coordinateScale)
+        val scaleArray = gen.scaleNoise.generateNoiseOctaves(
+            null, x, z, xSize, zSize, 1.121, 1.121, 0.5
+        )
+        val depthArray = gen.depthNoise.generateNoiseOctaves(
+            null, x, z, xSize, zSize, 200.0, 200.0, 0.5
+        )
+        val mainNoiseArray = gen.mainNoise.generateNoiseOctaves(
+            null, x, y, z, xSize, ySize, zSize,
+            coordinateScale / 80.0, heightScale / 160.0, coordinateScale / 80.0
+        )
+        val minLimitArray = gen.minLimitNoise.generateNoiseOctaves(
+            null, x, y, z, xSize, ySize, zSize,
+            coordinateScale, heightScale, coordinateScale
+        )
+        val maxLimitArray = gen.maxLimitNoise.generateNoiseOctaves(
+            null, x, y, z, xSize, ySize, zSize,
+            coordinateScale, heightScale, coordinateScale
+        )
 
-        var index  = 0
-        var index2 = 0
+        var index = 0
+        var depthIndex = 0
 
         for (i in 0 until xSize) {
             for (j in 0 until zSize) {
-                var d3 = ((scaleArray!![index2] + 256.0) / 512.0).coerceAtMost(1.0)
-                var d4 = depthArray!![index2] / 8000.0
+                var d3 = ((scaleArray[depthIndex] + 256.0) / 512.0).coerceAtMost(1.0)
+                var d4 = depthArray[depthIndex] / 8000.0
                 if (d4 < 0.0) d4 = -d4
                 d4 = d4 * 3.0 - 3.0
 
@@ -245,17 +251,17 @@ internal class SnowFlakePopulator(private val config: Generation) : BlockPopulat
                 }
 
                 d3 += 0.5
-                d4  = d4 * ySize / 16.0
+                d4 = d4 * ySize / 16.0
                 val d5 = ySize / 2.0 + d4 * 4.0
-                index2++
+                depthIndex++
 
                 for (k in 0 until ySize) {
                     var d7 = ((k.toDouble() - d5) * 12.0) / d3
                     if (d7 < 0.0) d7 *= 4.0
 
-                    val d8  = minLimitArray!![index]  / 512.0
-                    val d9  = maxLimitArray!![index]  / 512.0
-                    val d10 = (mainNoiseArray!![index] / 10.0 + 1.0) / 2.0
+                    val d8  = minLimitArray[index] / 512.0
+                    val d9  = maxLimitArray[index] / 512.0
+                    val d10 = (mainNoiseArray[index] / 10.0 + 1.0) / 2.0
 
                     var d6 = when {
                         d10 < 0.0 -> d8
@@ -278,5 +284,4 @@ internal class SnowFlakePopulator(private val config: Generation) : BlockPopulat
 
         return result
     }
-    // endregion
 }

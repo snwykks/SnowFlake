@@ -3,7 +3,6 @@ val projectGroup   = project.property("project_group")   as String
 val projectAuthor  = project.property("project_author")  as String
 
 val javaVersion = (project.property("java_version") as String).toInt()
-val minecraftVersion = project.property("minecraft_version") as String
 
 val paperVersion    = project.property("paper_version")    as String
 val kamlVersion     = project.property("kaml_version")     as String

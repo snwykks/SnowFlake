@@ -17,8 +17,7 @@ class FileFacade<T : Any>(fileName: String, dataFolder: File, private val serial
         )
     )
 
-    var value: T = load()
-        private set
+    var value: T = load(); private set
 
     private fun load(): T {
         if (!file.exists()) {
@@ -35,9 +34,7 @@ class FileFacade<T : Any>(fileName: String, dataFolder: File, private val serial
         value = newValue
     }
 
-    fun reload() {
-        value = load()
-    }
+    fun reload() { value = load() }
 
     private fun formatter(newValue: T): String {
         return yaml.encodeToString(serializer, newValue)

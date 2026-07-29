@@ -4,7 +4,7 @@ import io.snwykks.snowFlake.core.context.SnowFlakeContext
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger
 import net.kyori.adventure.text.minimessage.MiniMessage
 
-internal object SnowLogger {
+object SnowLogger {
     private lateinit var logger: ComponentLogger
     private val mm: MiniMessage by lazy { MiniMessage.miniMessage() }
 
@@ -21,7 +21,7 @@ internal object SnowLogger {
 
     private fun checkInit() {
         if (!::logger.isInitialized) {
-            throw IllegalStateException("PurpleTokyo logger not initialized!")
+            throw IllegalStateException("SnowLogger not initialized!")
         }
     }
 
@@ -43,8 +43,7 @@ internal object SnowLogger {
     }
 
     fun error(throwable: Throwable, message: String = "An error corrupted") {
-        logger.error(mm.deserialize("$message : ${throwable.message}"))
-        throwable.printStackTrace()
+        logger.error(mm.deserialize("$message : ${throwable.message}"), throwable)
     }
 
     fun debug(message: String) {

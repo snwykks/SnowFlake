@@ -20,7 +20,8 @@ internal class NoiseGeneratorOctaves(random: java.util.Random, private val octav
         val result = if (array == null) {
             DoubleArray(sizeX * sizeY * sizeZ)
         } else {
-            array.also { arr -> arr.indices.forEach { arr[it] = 0.0 } }
+            array.fill(0.0)
+            array
         }
 
         var d = 1.0

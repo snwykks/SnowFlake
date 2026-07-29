@@ -1,9 +1,9 @@
 name: SnowFlake
-version: '1.0-1.21'
+version: '1.2-1.21'
 main: io.snwykks.snowFlake.SnowFlake
 api-version: '1.21'
 prefix: snowflake
 load: STARTUP
 authors: [ snwykks ]
 description: Advanced farlands generating plugin.
-website: https://twitch.tv/snezhf
+website: https://t.me/Snezhf

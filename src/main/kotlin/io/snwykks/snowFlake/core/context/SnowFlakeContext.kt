@@ -10,7 +10,10 @@ internal object SnowFlakeContext {
     private lateinit var instance: JavaPlugin
     private val registries = mutableMapOf<Class<out Registry>, Registry>()
 
-    fun init(plugin: JavaPlugin) { instance = plugin }
+    fun init(plugin: JavaPlugin) {
+        if (::instance.isInitialized) { throw IllegalStateException("Already initialized!") }
+        instance = plugin
+    }
 
     fun get()       : JavaPlugin { return instance }
     fun getLogger() : Logger { return instance.logger }

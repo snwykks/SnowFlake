@@ -40,15 +40,8 @@ class SnowFlakeMessage(private val sender: CommandSender) {
         }
 
         fun send() {
-            if (template.isEmpty()) {
-//                PtLogger.debug("TokyoMessage Template is empty")
-                return
-            }
-
-            if (message.isEmpty()) {
-//                PtLogger.debug("TokyoMessage message is empty")
-                return
-            }
+            if (template.isEmpty()) { return }
+            if (message.isEmpty())  { return }
 
             val processedMessage = message.map { line ->
                 var result = line
@@ -70,7 +63,7 @@ class SnowFlakeMessage(private val sender: CommandSender) {
 
             val formattedMessage = processedMessage.joinToString("\n")
             val header = processedTemplate.firstOrNull() ?: ""
-            val prefixLine = processedTemplate.getOrNull(1) ?: ""
+            val prefixLine = processedTemplate.getOrNull(1) ?: "%message%"
 
             val finalMessage = if (processedMessage.size == 1) {
                 header + "\n" + prefixLine.replace("%message%", formattedMessage)

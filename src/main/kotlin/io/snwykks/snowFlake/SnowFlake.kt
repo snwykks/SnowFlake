@@ -28,6 +28,7 @@ class SnowFlake : JavaPlugin() {
     }
 
     override fun onDisable() {
+        SnowFlakeContext.closeAll()
         SnowLogger.info("<blue>Goodbye world from SnowFlake ~</blue>")
     }
 }

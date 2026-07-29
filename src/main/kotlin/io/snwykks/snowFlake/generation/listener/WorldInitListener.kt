@@ -14,6 +14,8 @@ internal object WorldInitListener : Listener {
 
         if (event.world.name !in config.worlds) return
 
+        if (event.world.populators.any { it is SnowFlakePopulator }) return
+
         event.world.populators.add(SnowFlakePopulator(config))
 
         SnowLogger.info("<blue>SnowFlake populator attached to world:</blue> <white>${event.world.name}</white>")
