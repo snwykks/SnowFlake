@@ -22,7 +22,7 @@ Plugins generates farlands in world in realtime with BlockPopulator.
 
 + generation.yml
 ```yml
-version: 1.1.0
+version: 1.2
 # The worlds where Far Lands generation is applied.
 worlds:
 - world
@@ -51,26 +51,20 @@ farlands:
 + config.yml
 ```yml
 # Don't change it if you don't know what it is.
-version: 1.1.0
+version: 1.2
 
 #  prefix for messages in minecraft.
 prefix: <gradient:#4490f3:#b3d4ff>SnowFlake</gradient>
 message_templates:
-  simple:
-  - <white>❏ <bold>%prefix%</white>  <bold>%module%</bold> <bold><#7fc4f5>*</#7fc4f5></bold> %message%
   multiline:
   - <white>❏ <bold>%prefix%</white>  <bold>%module%</bold>
   - <bold><#7fc4f5>*</#7fc4f5></bold> <white>%message%</white>
-  advanced:
-  - <white>❏ <bold>%prefix%</white>  <bold>%module%</bold>
-  - <bold><#7fc4f5>*</#7fc4f5></bold> <white>%message%</white>
-  - <#a57ff5>+</#a57ff5> <white>%inspector%</white>
 
 #  neofetch for plugin fetch on start.
 neofetch:
-- <blue>                           __ _       _          </blue>
-- <blue>                          / _| |     | |         </blue>
-- <blue>  ___ _ __   _____      _| |_| | __ _| | _____   </blue>
+- <blue>                           __ _       _           </blue>
+- <blue>                          / _| |     | |          </blue>
+- <blue>  ___ _ __   _____      _| |_| | __ _| | _____    </blue>
 - <blue> / __| '_ \ / _ \ \ /\ / /  _| |/ _` | |/ / _ \ </blue>
 - <blue> \__ \ | | | (_) \ V  V /| | | | (_| |   <  __/ </blue>
 - <blue> |___/_| |_|\___/ \_/\_/ |_| |_|\__,_|_|\_\___| </blue>
@@ -96,8 +90,10 @@ messages:
   config_message:
   - '<white>Active worlds: <#7fc4f5>%worlds%</#7fc4f5><white>'
   - '<white>Distance: <#7fc4f5>%distance%</#7fc4f5><white>'
-  - '<white>coordinateScale: <#7fc4f5>%coordinateScale%</#7fc4f5><white>'
-  - '<white>heightScale: <#7fc4f5>%heightScale%</#7fc4f5><white>'
+  - '<white>CoordinateScale: <#7fc4f5>%coordinateScale%</#7fc4f5><white>'
+  - '<white>HeightScale: <#7fc4f5>%heightScale%</#7fc4f5><white>'
+  - '<white>MinHeightY: <#7fc4f5>%minHeightY%</#7fc4f5></white>'
+  - '<white>MaxHeightY: <#7fc4f5>%maxHeightY%</#7fc4f5></white>'
 ```
 
 Using libs:
