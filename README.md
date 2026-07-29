@@ -1,7 +1,7 @@
 # SnowFlake [ 1.21.x ]
 A Minecraft Farland modern generation plugin.
 
-<img width="2560" height="1351" alt="2026-07-27_13 22 14" src="https://github.com/user-attachments/assets/03c06eb3-127f-4369-b6f3-f9766d52dde1" />
+<img width="1920" height="1013" alt="2026-07-29_13 11 47" src="https://github.com/user-attachments/assets/dd3aa726-e699-4ccd-8300-fbb36b34d96f" />
 
 ---
 # What is SnowFlake?
