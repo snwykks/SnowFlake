@@ -7,7 +7,7 @@ A Minecraft Farland modern generation plugin.
 # What is SnowFlake?
 This is a simple minecraft Paper Plugin for FarLand generation in 1.21.x.
 Plugin modificating generation in worlds which typed in config (generation.yml)
-in custom distance (generation.yml). Brings a old minecraft bug of generation
+in custom distance (generation.yml). Configs have Adventure MiniMessage formatting. Brings a old minecraft bug of generation
 in new minecraft versions.
 
 Plugins generates farlands in world in realtime with BlockPopulator.
