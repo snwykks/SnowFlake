@@ -13,6 +13,12 @@ in new minecraft versions.
 Plugins generates farlands in world in realtime with BlockPopulator.
 
 ---
+## License
+
+This project is licensed under the Mozilla Public License 2.0.
+See the [LICENSE](LICENSE) file for details.
+
+---
 # Configs
 | File | What doing |
 |-------------|-------------|
